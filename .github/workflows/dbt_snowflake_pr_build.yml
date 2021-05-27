@@ -36,7 +36,7 @@ jobs:
       - name: dbt run
         working-directory: integration_tests
         run: |
-          export CI_SNOWFLAKE_DBT_SCHEMA=dbt_pr_salesforce_source_$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          export CI_SNOWFLAKE_DBT_SCHEMA=dbt_pr_zendesk_source_$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           dbt deps --profiles-dir ci
           dbt run --profiles-dir ci
           dbt test --profiles-dir ci
