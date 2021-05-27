@@ -7,7 +7,7 @@
 with base as (
 
     select *
-    from {{ ref('stg_zendesk__user_tag_tmp') }}
+    from {{ var('user_tag') }}
 
 ),
 
@@ -22,7 +22,7 @@ fields as (
         */
         {{
             fivetran_utils.fill_staging_columns(
-                source_columns=adapter.get_columns_in_relation(ref('stg_zendesk__user_tag_tmp')),
+                source_columns=adapter.get_columns_in_relation(var('user_tag')),
                 staging_columns=get_user_tag_columns()
             )
         }}

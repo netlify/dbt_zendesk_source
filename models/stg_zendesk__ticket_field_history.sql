@@ -3,7 +3,7 @@
 with base as (
 
     select *
-    from {{ ref('stg_zendesk__ticket_field_history_tmp') }}
+    from {{ var('ticket_field_history') }}
 
 ),
 
@@ -18,7 +18,7 @@ fields as (
         */
         {{
             fivetran_utils.fill_staging_columns(
-                source_columns=adapter.get_columns_in_relation(ref('stg_zendesk__ticket_field_history_tmp')),
+                source_columns=adapter.get_columns_in_relation(var('ticket_field_history')),
                 staging_columns=get_ticket_field_history_columns()
             )
         }}
