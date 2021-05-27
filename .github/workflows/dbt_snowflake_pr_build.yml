@@ -1,0 +1,42 @@
+name: dbt Snowflake (github_source) - PR Build
+
+on: pull_request
+
+env:
+  CI_SNOWFLAKE_DBT_ACCOUNT: ${{ secrets.CI_SNOWFLAKE_DBT_ACCOUNT }}
+  CI_SNOWFLAKE_DBT_USER: ${{ secrets.CI_SNOWFLAKE_DBT_USER }}
+  CI_SNOWFLAKE_DBT_PASS: ${{ secrets.CI_SNOWFLAKE_DBT_PASS }}
+  CI_SNOWFLAKE_DBT_ROLE: ${{ secrets.CI_SNOWFLAKE_DBT_ROLE }}
+  CI_SNOWFLAKE_DBT_DATABASE: ${{ secrets.CI_SNOWFLAKE_DBT_DATABASE }}
+  CI_SNOWFLAKE_DBT_WAREHOUSE: ${{ secrets.CI_SNOWFLAKE_DBT_WAREHOUSE }}
+  CI_SNOWFLAKE_DBT_SCHEMA: dbt_pr_github_source_default
+
+jobs:
+  pr_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Install Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dbt
+        run: |
+          pip install --upgrade pip
+          pip install -r integration_tests/requirements.txt
+      - name: dbt run
+        working-directory: integration_tests
+        run: |
+          export CI_SNOWFLAKE_DBT_SCHEMA=dbt_pr_salesforce_source_$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          dbt deps --profiles-dir ci
+          dbt run --profiles-dir ci
+          dbt test --profiles-dir ci
