@@ -7,10 +7,9 @@ require-dbt-version: [">=0.18.0", "<0.20.0"]
 
 models:
   zendesk_source:
-    materialized: table
-    +schema: zendesk_staging
+    materialized: view
     tmp:
-      materialized: view
+      enabled: false
 
 vars:
   zendesk_source:
